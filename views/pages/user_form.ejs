@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head'); %>
+</head>
+<body class="container">
+
+<header>
+    <%- include('../partials/header', {variant: 'compact'}); %>
+</header>
+
+<main>
+<div class="row">
+  <div class="col-sm-12">
+    <div class="jumbotron d-flex flex-column align-items-center">
+      <h1><%= type === "register" ? "Cadastro" : "Editar Usuário" %></h1>
+      <form class="col-sm-6" action="<%= type === 'register' ? '/register' : '/edit-user' %>" method="POST">
+        <input class="mb-3 p-2 col-sm-12" type="text" name="username" placeholder="Insira seu nome de usuário" value="<%= type === 'edit' ? username : '' %>" />
+        <input class="mb-3 p-2 col-sm-12" type="password" name="senha" placeholder="Insira sua senha" value="<%= type === 'edit' ? senha : '' %>" />
+        <input class="mb-3 p-2 col-sm-12" type="email" name="email" placeholder="Insira seu email" value="<%= type === 'edit' ? email : '' %>" />
+        <p><%= erro ? erro : "" %></p>
+        <button class="p-2 col-sm-12 btn-primary" type="submit"><%= type === "register" ? "Criar" : "Editar" %></button>
+      </form>
+    </div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <%- include('../partials/footer'); %>
+</footer>
+
+</body>
+</html>

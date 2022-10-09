@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+CAUTION: Do not modify this file unless you know what you are doing.
+ Unexpected results may occur if the code is changed deliberately.
+-->
+<dbmodel pgmodeler-ver="0.9.4" use-changelog="false" last-position="0,0" last-zoom="1" max-obj-count="4"
+	 default-schema="public" default-owner="postgres"
+	 layers="Default layer"
+	 active-layers="0"
+	 layer-name-colors="#000000"
+	 layer-rect-colors="#b4b4b4"
+	 show-layer-names="false" show-layer-rects="false">
+<database name="projeto_eng" is-template="false" allow-conns="true">
+</database>
+
+<schema name="public" layers="0" fill-color="#e1e1e1" sql-disabled="true">
+</schema>
+
+<schema name="req_software" layers="0" rect-visible="true" fill-color="#e1e1e1">
+	<role name="postgres"/>
+</schema>
+
+<table name="usuarios" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="620" y="200"/>
+	<column name="id" not-null="true"
+	 identity-type="ALWAYS">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="username">
+		<type name="varchar" length="50"/>
+	</column>
+	<column name="senha">
+		<type name="varchar" length="200"/>
+	</column>
+	<column name="email">
+		<type name="varchar" length="200"/>
+	</column>
+	<column name="forgot_token">
+		<type name="varchar" length="50"/>
+	</column>
+	<constraint name="usuarios_pk" type="pk-constr" table="public.usuarios">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="username_unique_constraint" type="uq-constr" table="public.usuarios">
+		<columns names="username" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="email_unique_constraint" type="uq-constr" table="public.usuarios">
+		<columns names="email" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+</dbmodel>
