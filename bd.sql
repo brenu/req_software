@@ -115,42 +115,42 @@ ALTER TABLE public.atributos OWNER TO postgres;
 -- ALTER TABLE public.requisitos_de_usuario DROP CONSTRAINT IF EXISTS fk_constraint_id_usuario_req_usuario CASCADE;
 ALTER TABLE public.requisitos_de_usuario ADD CONSTRAINT fk_constraint_id_usuario_req_usuario FOREIGN KEY (id_usuario)
 REFERENCES public.usuarios (id) MATCH SIMPLE
-ON DELETE NO ACTION ON UPDATE NO ACTION;
+ON DELETE CASCADE ON UPDATE CASCADE;
 -- ddl-end --
 
 -- object: fk_requisito_funcional_requisitos_de_usuario | type: CONSTRAINT --
 -- ALTER TABLE public.requisitos_funcionais DROP CONSTRAINT IF EXISTS fk_requisito_funcional_requisitos_de_usuario CASCADE;
 ALTER TABLE public.requisitos_funcionais ADD CONSTRAINT fk_requisito_funcional_requisitos_de_usuario FOREIGN KEY (id_requisito_usuario)
 REFERENCES public.requisitos_de_usuario (id) MATCH SIMPLE
-ON DELETE NO ACTION ON UPDATE NO ACTION;
+ON DELETE CASCADE ON UPDATE CASCADE;
 -- ddl-end --
 
 -- object: fk_requisito_de_crud_requisitos_funcionais | type: CONSTRAINT --
 -- ALTER TABLE public.requisitos_de_crud DROP CONSTRAINT IF EXISTS fk_requisito_de_crud_requisitos_funcionais CASCADE;
 ALTER TABLE public.requisitos_de_crud ADD CONSTRAINT fk_requisito_de_crud_requisitos_funcionais FOREIGN KEY (id_requisito_funcional)
 REFERENCES public.requisitos_funcionais (id) MATCH SIMPLE
-ON DELETE NO ACTION ON UPDATE NO ACTION;
+ON DELETE CASCADE ON UPDATE CASCADE;
 -- ddl-end --
 
 -- object: fk_requisito_de_processamento_requisitos_funcionais | type: CONSTRAINT --
 -- ALTER TABLE public.requisitos_de_processamento DROP CONSTRAINT IF EXISTS fk_requisito_de_processamento_requisitos_funcionais CASCADE;
 ALTER TABLE public.requisitos_de_processamento ADD CONSTRAINT fk_requisito_de_processamento_requisitos_funcionais FOREIGN KEY (id_requisito_funcional)
 REFERENCES public.requisitos_funcionais (id) MATCH SIMPLE
-ON DELETE NO ACTION ON UPDATE NO ACTION;
+ON DELETE CASCADE ON UPDATE CASCADE;
 -- ddl-end --
 
 -- object: fk_entidade_requisitos_crud | type: CONSTRAINT --
 -- ALTER TABLE public.entidades DROP CONSTRAINT IF EXISTS fk_entidade_requisitos_crud CASCADE;
 ALTER TABLE public.entidades ADD CONSTRAINT fk_entidade_requisitos_crud FOREIGN KEY (id_requisito_de_crud)
 REFERENCES public.requisitos_de_crud (id) MATCH SIMPLE
-ON DELETE NO ACTION ON UPDATE NO ACTION;
+ON DELETE CASCADE ON UPDATE CASCADE;
 -- ddl-end --
 
 -- object: fk_atributo_entidades | type: CONSTRAINT --
 -- ALTER TABLE public.atributos DROP CONSTRAINT IF EXISTS fk_atributo_entidades CASCADE;
 ALTER TABLE public.atributos ADD CONSTRAINT fk_atributo_entidades FOREIGN KEY (id_entidade)
 REFERENCES public.entidades (id) MATCH SIMPLE
-ON DELETE NO ACTION ON UPDATE NO ACTION;
+ON DELETE CASCADE ON UPDATE CASCADE;
 -- ddl-end --
 
 

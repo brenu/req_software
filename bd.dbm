@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
  Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.4" use-changelog="false" last-position="0,39" last-zoom="1" max-obj-count="8"
+<dbmodel pgmodeler-ver="0.9.4" use-changelog="false" last-position="188,449" last-zoom="1" max-obj-count="8"
 	 default-schema="public" default-owner="postgres"
 	 layers="Default layer"
 	 active-layers="0"
@@ -166,37 +166,37 @@ CAUTION: Do not modify this file unless you know what you are doing.
 </table>
 
 <constraint name="fk_constraint_id_usuario_req_usuario" type="fk-constr" comparison-type="MATCH SIMPLE"
-	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.usuarios" table="public.requisitos_de_usuario">
+	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.usuarios" table="public.requisitos_de_usuario">
 	<columns names="id_usuario" ref-type="src-columns"/>
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
 <constraint name="fk_requisito_funcional_requisitos_de_usuario" type="fk-constr" comparison-type="MATCH SIMPLE"
-	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.requisitos_de_usuario" table="public.requisitos_funcionais">
+	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.requisitos_de_usuario" table="public.requisitos_funcionais">
 	<columns names="id_requisito_usuario" ref-type="src-columns"/>
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
 <constraint name="fk_requisito_de_crud_requisitos_funcionais" type="fk-constr" comparison-type="MATCH SIMPLE"
-	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.requisitos_funcionais" table="public.requisitos_de_crud">
+	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.requisitos_funcionais" table="public.requisitos_de_crud">
 	<columns names="id_requisito_funcional" ref-type="src-columns"/>
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
 <constraint name="fk_requisito_de_processamento_requisitos_funcionais" type="fk-constr" comparison-type="MATCH SIMPLE"
-	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.requisitos_funcionais" table="public.requisitos_de_processamento">
+	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.requisitos_funcionais" table="public.requisitos_de_processamento">
 	<columns names="id_requisito_funcional" ref-type="src-columns"/>
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
 <constraint name="fk_entidade_requisitos_crud" type="fk-constr" comparison-type="MATCH SIMPLE"
-	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.requisitos_de_crud" table="public.entidades">
+	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.requisitos_de_crud" table="public.entidades">
 	<columns names="id_requisito_de_crud" ref-type="src-columns"/>
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
 <constraint name="fk_atributo_entidades" type="fk-constr" comparison-type="MATCH SIMPLE"
-	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.entidades" table="public.atributos">
+	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.entidades" table="public.atributos">
 	<columns names="id_entidade" ref-type="src-columns"/>
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
