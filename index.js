@@ -69,7 +69,7 @@ app.post('/register', async (req, res) => {
     senha = crypto.pbkdf2Sync(senha, process.env.SESSIONS_SECRET, 1000, 64, 'sha512').toString('hex');
 
     const result = await bd.query("INSERT INTO usuarios (username, senha, email) VALUES ($1, $2, $3) RETURNING id", [username, senha, email]);
-    const id = result.rows[0].row;
+    const id = result.rows[0].id;
 
     req.session.user = {id, username, email};
 
@@ -235,12 +235,38 @@ app.post("/requirements/create", authMiddleware, async (req, res) => {
 });
 
 app.get("/requirements/edit/:id", authMiddleware, async (req, res) => {
-  return res.render('pages/requirement_form', {
-    type: "edit",
-    erro: "",
-  });
+  const { id } = req.params;
+
+  try {
+    const texto = (await bd.query("SELECT descritivo FROM requisitos_de_usuario WHERE id = $1 AND id_usuario = $2",
+    [id, req.session.user.id])).rows[0].descritivo;
+
+    if (texto) {
+      return res.render('pages/requirement_form', {
+        type: "edit",
+        texto,
+        erro: "",
+      });
+    }
+  } catch (error) {
+    return res.render("pages/404");
+  }
+
 });
 app.post("/requirements/edit/:id", authMiddleware, async (req, res) => {});
+
+app.get("/requirements/delete/:id", authMiddleware, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    await bd.query("DELETE FROM requisitos_de_usuario WHERE id = $1 AND id_usuario = $2", [id, req.session.user.id]);
+
+    return res.redirect("/requirements");
+  } catch (error) {
+    return res.render("pages/404");
+  }
+
+});
 
 app.listen(8080);
 console.log('Server is listening on port 8080');

@@ -30,7 +30,14 @@
                 <td><%= requisito.descritivo %></td>
                 <td><%= requisito.tipo %></td>
                 <td><%= requisito.entidade %></td>
-                <td><p>Nada aqui ainda</p></td>
+                <td>
+                  <a href="/requirements/edit/<%= requisito.id_requisito_usuario %>">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </a>
+                  <a href="/requirements/delete/<%= requisito.id_requisito_usuario %>">
+                    <i class="fa-solid fa-trash"></i>
+                  </a>
+                </td>
               </tr>
             <% }); %>
           </tbody>
