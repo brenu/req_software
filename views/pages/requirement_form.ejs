@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head'); %>
+</head>
+<body class="container">
+
+<header>
+    <%- include('../partials/header', {variant: 'compact'}); %>
+</header>
+
+<main>
+<div class="row">
+  <div class="col-sm-12">
+    <div class="jumbotron d-flex flex-column align-items-center">
+      <h1><%= type === "create" ? "Cadastrar Novo " : "Editar " %>Requisito</h1>
+      <form class="col-sm-10" method="POST">
+        <label for="texto" style="color:#444">Estrutura esperada: <br />O sistema deve <span style="color:#f55;">&lt;exibir/incluir/atualizar/remover/outros (requisitos para processamento)&gt;</span> <span style="color:#4bb543;">&lt;entidade&gt;</span> <span style="color:#4bb;">&lt;condição (opcional)&gt;</span> com <span style="color:#8b43b5;">&lt;atributos (somente ao incluir, separados por vírgula)&gt;</span></label>
+        <input class="mb-3 p-2 col-sm-12" type="text" name="texto" placeholder="ex: O sistema deve incluir clientes aprovados com nome, endereço, cpf" value="<%= type === 'edit' ? username : '' %>" />
+        <p><%= erro ? erro : "" %></p>
+        <button class="p-2 col-sm-12 btn-primary" type="submit"><%= type === "create" ? "Criar" : "Editar" %></button>
+      </form>
+    </div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <%- include('../partials/footer'); %>
+</footer>
+
+</body>
+</html>

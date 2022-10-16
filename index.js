@@ -85,7 +85,6 @@ app.post('/register', async (req, res) => {
 });
 
 app.get('/edit-user', authMiddleware, function(req, res) {
-  console.log(req.session);
   res.render('pages/user_form', {
     type: "edit",
     username: req.session.user.username,
@@ -121,7 +120,6 @@ app.post('/edit-user', authMiddleware, async (req, res) => {
     parameters.push(req.session.user.id);
     query += ` WHERE id = $${parameters.length}`
 
-    console.log(query);
     await bd.query(query, parameters);
 
     req.session.user.username = username ? username : req.session.user.email;
@@ -129,7 +127,6 @@ app.post('/edit-user', authMiddleware, async (req, res) => {
 
     return res.redirect("/edit-user");
   } catch (error) {
-    console.log(error);
     return res.render('pages/user_form', {
       type: "edit",
       username,
@@ -139,6 +136,24 @@ app.post('/edit-user', authMiddleware, async (req, res) => {
     });
   }
 });
+
+app.get("/requirements", authMiddleware, async (req, res) => {});
+
+app.get("/requirements/create", authMiddleware, async (req, res) => {
+  res.render('pages/requirement_form', {
+    type: "create",
+    erro: "",
+  });
+});
+app.post("/requirements/create", authMiddleware, async (req, res) => {});
+
+app.get("/requirements/edit/:id", authMiddleware, async (req, res) => {
+  res.render('pages/requirement_form', {
+    type: "edit",
+    erro: "",
+  });
+});
+app.post("/requirements/edit/:id", authMiddleware, async (req, res) => {});
 
 app.listen(8080);
 console.log('Server is listening on port 8080');
