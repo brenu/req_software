@@ -6,7 +6,7 @@
 <body class="container">
 
 <header>
-    <%- include('../partials/header', {variant: 'compact'}); %>
+    <%- include('../partials/auth_header'); %>
 </header>
 
 <main>
@@ -43,7 +43,7 @@
           </tbody>
         </table>
       <% } else{ %>  
-        <p>Ainda não foi cadastrado nenhum requisito para o seu projeto!</p>
+        <p>Ainda não foi cadastrado nenhum requisito para o seu projeto, crie <a href="/requirements/create">aqui</a>!</p>
       <% } %>
     </div>
   </div>
