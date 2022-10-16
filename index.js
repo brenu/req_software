@@ -253,7 +253,53 @@ app.get("/requirements/edit/:id", authMiddleware, async (req, res) => {
   }
 
 });
-app.post("/requirements/edit/:id", authMiddleware, async (req, res) => {});
+
+app.post("/requirements/edit/:id", authMiddleware, async (req, res) => {
+  const { id } = req.params;
+  const { texto } = req.body;
+
+  try {
+    const id_requisito = (await bd.query("SELECT id FROM requisitos_de_usuario WHERE id  = $1 AND id_usuario = $2", [id, req.session.user.id])).rows[0].id;
+
+    if (id_requisito) {
+      await bd.query("DELETE FROM requisitos_funcionais WHERE id_requisito_usuario = $1", [id_requisito]);
+
+      const requisito = new Requisito(texto);
+
+      await bd.query("UPDATE requisitos_de_usuario SET descritivo = $1 WHERE id = $2", [requisito.texto, id_requisito]);
+
+      const id_requisito_funcional = (await bd.query(
+        "INSERT INTO requisitos_funcionais (id_requisito_usuario) VALUES ($1) RETURNING id",
+        [id_requisito]
+      )).rows[0].id;
+    
+      if (requisito.tipo_requisito === "crud") {
+        const id_requisito_de_crud = (await bd.query(
+          "INSERT INTO requisitos_de_crud (id_requisito_funcional, tipo) VALUES ($1, $2) RETURNING id",
+          [id_requisito_funcional, requisito.tipo]
+        )).rows[0].id;
+  
+        const id_entidade = (await bd.query(
+          "INSERT INTO entidades (id_requisito_de_crud, nome) VALUES ($1, $2) RETURNING id",
+          [id_requisito_de_crud, requisito.entidade]
+        )).rows[0].id;
+  
+        for (let atributo of requisito.atributos) {
+          await bd.query(
+            "INSERT INTO atributos (id_entidade, nome, tipo, tamanho) VALUES ($1, $2, $3, $4) RETURNING id",
+            [id_entidade, atributo, "varchar", "255"]
+          );
+        }
+      }
+
+      return res.redirect("/requirements");
+    }
+
+    return res.render("pages/404");
+  } catch (error) {
+    return res.render("pages/404");
+  }
+});
 
 app.get("/requirements/delete/:id", authMiddleware, async (req, res) => {
   const { id } = req.params;
