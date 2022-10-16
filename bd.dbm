@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
  Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.4" use-changelog="false" last-position="0,465" last-zoom="1" max-obj-count="6"
+<dbmodel pgmodeler-ver="0.9.4" use-changelog="false" last-position="0,39" last-zoom="1" max-obj-count="8"
 	 default-schema="public" default-owner="postgres"
 	 layers="Default layer"
 	 active-layers="0"
@@ -59,11 +59,11 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 identity-type="ALWAYS">
 		<type name="bigint" length="0"/>
 	</column>
-	<column name="id_usuario">
-		<type name="bigint" length="0"/>
-	</column>
 	<column name="descritivo">
 		<type name="text" length="0"/>
+	</column>
+	<column name="id_usuario">
+		<type name="bigint" length="0"/>
 	</column>
 	<constraint name="requisitos_de_usuario_pk" type="pk-constr" table="public.requisitos_de_usuario">
 		<columns names="id" ref-type="src-columns"/>
@@ -94,11 +94,11 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 identity-type="ALWAYS">
 		<type name="bigint" length="0"/>
 	</column>
-	<column name="id_requisito_funcional">
-		<type name="bigint" length="0"/>
-	</column>
 	<column name="tipo">
 		<type name="varchar" length="10"/>
+	</column>
+	<column name="id_requisito_funcional">
+		<type name="bigint" length="0"/>
 	</column>
 	<constraint name="requisitos_de_crud_pk" type="pk-constr" table="public.requisitos_de_crud">
 		<columns names="id" ref-type="src-columns"/>
@@ -117,6 +117,50 @@ CAUTION: Do not modify this file unless you know what you are doing.
 		<type name="bigint" length="0"/>
 	</column>
 	<constraint name="requisitos_de_processamento_pk" type="pk-constr" table="public.requisitos_de_processamento">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="entidades" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="520" y="980"/>
+	<column name="id" not-null="true"
+	 identity-type="ALWAYS">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="nome">
+		<type name="varchar" length="200"/>
+	</column>
+	<column name="id_requisito_de_crud">
+		<type name="bigint" length="0"/>
+	</column>
+	<constraint name="entidades_pk" type="pk-constr" table="public.entidades">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="atributos" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="540" y="1200"/>
+	<column name="id" not-null="true"
+	 identity-type="ALWAYS">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="nome">
+		<type name="varchar" length="200"/>
+	</column>
+	<column name="tipo">
+		<type name="varchar" length="20"/>
+	</column>
+	<column name="tamanho">
+		<type name="varchar" length="3"/>
+	</column>
+	<column name="id_entidade">
+		<type name="bigint" length="0"/>
+	</column>
+	<constraint name="atributos_pk" type="pk-constr" table="public.atributos">
 		<columns names="id" ref-type="src-columns"/>
 	</constraint>
 </table>
@@ -145,6 +189,18 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
+<constraint name="fk_entidade_requisitos_crud" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.requisitos_de_crud" table="public.entidades">
+	<columns names="id_requisito_de_crud" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_atributo_entidades" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.entidades" table="public.atributos">
+	<columns names="id_entidade" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
 <relationship name="rel_requisitos_de_usuario_usuarios" type="relfk" layers="0"
 	 src-table="public.requisitos_de_usuario"
 	 dst-table="public.usuarios" reference-fk="fk_constraint_id_usuario_req_usuario"
@@ -167,6 +223,20 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <relationship name="rel_requisitos_de_crud_cp_requisitos_funcionais" type="relfk" layers="0"
 	 src-table="public.requisitos_de_processamento"
 	 dst-table="public.requisitos_funcionais" reference-fk="fk_requisito_de_processamento_requisitos_funcionais"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_entidades_requisitos_de_crud" type="relfk" layers="0"
+	 src-table="public.entidades"
+	 dst-table="public.requisitos_de_crud" reference-fk="fk_entidade_requisitos_crud"
+	 src-required="false" dst-required="false">
+	<label ref-type="name-label">
+		<position x="0" y="0"/>
+	</label>
+</relationship>
+
+<relationship name="rel_atributos_entidades" type="relfk" layers="0"
+	 src-table="public.atributos"
+	 dst-table="public.entidades" reference-fk="fk_atributo_entidades"
 	 src-required="false" dst-required="false"/>
 
 </dbmodel>

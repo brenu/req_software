@@ -43,8 +43,8 @@ ALTER TABLE public.usuarios OWNER TO postgres;
 -- DROP TABLE IF EXISTS public.requisitos_de_usuario CASCADE;
 CREATE TABLE public.requisitos_de_usuario (
 	id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ,
-	id_usuario bigint,
 	descritivo text,
+	id_usuario bigint,
 	CONSTRAINT requisitos_de_usuario_pk PRIMARY KEY (id)
 );
 -- ddl-end --
@@ -66,8 +66,8 @@ ALTER TABLE public.requisitos_funcionais OWNER TO postgres;
 -- DROP TABLE IF EXISTS public.requisitos_de_crud CASCADE;
 CREATE TABLE public.requisitos_de_crud (
 	id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ,
-	id_requisito_funcional bigint,
 	tipo varchar(10),
+	id_requisito_funcional bigint,
 	CONSTRAINT requisitos_de_crud_pk PRIMARY KEY (id)
 );
 -- ddl-end --
@@ -83,6 +83,32 @@ CREATE TABLE public.requisitos_de_processamento (
 );
 -- ddl-end --
 ALTER TABLE public.requisitos_de_processamento OWNER TO postgres;
+-- ddl-end --
+
+-- object: public.entidades | type: TABLE --
+-- DROP TABLE IF EXISTS public.entidades CASCADE;
+CREATE TABLE public.entidades (
+	id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ,
+	nome varchar(200),
+	id_requisito_de_crud bigint,
+	CONSTRAINT entidades_pk PRIMARY KEY (id)
+);
+-- ddl-end --
+ALTER TABLE public.entidades OWNER TO postgres;
+-- ddl-end --
+
+-- object: public.atributos | type: TABLE --
+-- DROP TABLE IF EXISTS public.atributos CASCADE;
+CREATE TABLE public.atributos (
+	id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ,
+	nome varchar(200),
+	tipo varchar(20),
+	tamanho varchar(3),
+	id_entidade bigint,
+	CONSTRAINT atributos_pk PRIMARY KEY (id)
+);
+-- ddl-end --
+ALTER TABLE public.atributos OWNER TO postgres;
 -- ddl-end --
 
 -- object: fk_constraint_id_usuario_req_usuario | type: CONSTRAINT --
@@ -110,6 +136,20 @@ ON DELETE NO ACTION ON UPDATE NO ACTION;
 -- ALTER TABLE public.requisitos_de_processamento DROP CONSTRAINT IF EXISTS fk_requisito_de_processamento_requisitos_funcionais CASCADE;
 ALTER TABLE public.requisitos_de_processamento ADD CONSTRAINT fk_requisito_de_processamento_requisitos_funcionais FOREIGN KEY (id_requisito_funcional)
 REFERENCES public.requisitos_funcionais (id) MATCH SIMPLE
+ON DELETE NO ACTION ON UPDATE NO ACTION;
+-- ddl-end --
+
+-- object: fk_entidade_requisitos_crud | type: CONSTRAINT --
+-- ALTER TABLE public.entidades DROP CONSTRAINT IF EXISTS fk_entidade_requisitos_crud CASCADE;
+ALTER TABLE public.entidades ADD CONSTRAINT fk_entidade_requisitos_crud FOREIGN KEY (id_requisito_de_crud)
+REFERENCES public.requisitos_de_crud (id) MATCH SIMPLE
+ON DELETE NO ACTION ON UPDATE NO ACTION;
+-- ddl-end --
+
+-- object: fk_atributo_entidades | type: CONSTRAINT --
+-- ALTER TABLE public.atributos DROP CONSTRAINT IF EXISTS fk_atributo_entidades CASCADE;
+ALTER TABLE public.atributos ADD CONSTRAINT fk_atributo_entidades FOREIGN KEY (id_entidade)
+REFERENCES public.entidades (id) MATCH SIMPLE
 ON DELETE NO ACTION ON UPDATE NO ACTION;
 -- ddl-end --
 
