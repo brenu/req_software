@@ -6,7 +6,7 @@ class Requisito {
         this.tipo_requisito;
         this.entidade;
         this.condicao;
-        this.atributos;
+        this.atributos = [];
         
         const error = this.parse(this.texto);
         if (error) {
