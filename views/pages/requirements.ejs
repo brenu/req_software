@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head'); %>
+</head>
+<body class="container">
+
+<header>
+    <%- include('../partials/header', {variant: 'compact'}); %>
+</header>
+
+<main>
+<div class="row">
+  <div class="col-sm-12">
+    <div class="jumbotron d-flex flex-column align-items-center">
+      <h1 class="mb-3">Requisitos Já Cadastrados</h1>
+      <% if(requisitos.length){ %>
+        <table class="table table-dark rounded" style="overflow: hidden">
+          <thead>
+            <tr>
+              <th scope="col" class="border-0">Descritivo</th>
+              <th scope="col" class="border-0">Tipo</th>
+              <th scope="col" class="border-0">Entidade</th>
+              <th scope="col" class="border-0">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% requisitos.forEach((requisito) => { %>
+              <tr>
+                <td><%= requisito.descritivo %></td>
+                <td><%= requisito.tipo %></td>
+                <td><%= requisito.entidade %></td>
+                <td><p>Nada aqui ainda</p></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      <% } else{ %>  
+        <p>Ainda não foi cadastrado nenhum requisito para o seu projeto!</p>
+      <% } %>
+    </div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <%- include('../partials/footer'); %>
+</footer>
+
+</body>
+</html>

@@ -4,6 +4,7 @@ const bd = require('./config/bd');
 const session = require('./config/session');
 const app = express();
 const crypto = require('crypto');
+const Requisito = require('./models/requisito');
 
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended: false}));
@@ -137,18 +138,104 @@ app.post('/edit-user', authMiddleware, async (req, res) => {
   }
 });
 
-app.get("/requirements", authMiddleware, async (req, res) => {});
+app.get("/requirements", authMiddleware, async (req, res) => {
+  const requisitosDeCRUD = (await bd.query(`
+    SELECT 
+      requisitos_de_usuario.descritivo,
+      requisitos_de_usuario.id_usuario,
+      requisitos_de_usuario.id AS id_requisito_usuario,
+      'crud' AS tipo,
+      entidades.nome AS entidade
+    FROM requisitos_de_usuario
+    INNER JOIN requisitos_funcionais ON requisitos_de_usuario.id = requisitos_funcionais.id_requisito_usuario
+    INNER JOIN requisitos_de_crud ON requisitos_funcionais.id = requisitos_de_crud.id_requisito_funcional
+    INNER JOIN entidades ON entidades.id_requisito_de_crud = requisitos_de_crud.id
+    WHERE requisitos_de_usuario.id_usuario = $1
+  `, [req.session.user.id])).rows;
+
+  const requisitosDeProcessamento = (await bd.query(`
+    SELECT 
+      requisitos_de_usuario.descritivo,
+      requisitos_de_usuario.id_usuario,
+      requisitos_de_usuario.id AS id_requisito_usuario,
+      'processamento' AS tipo,
+      'N/A' AS entidade
+    FROM requisitos_de_usuario
+    INNER JOIN requisitos_funcionais ON requisitos_de_usuario.id = requisitos_funcionais.id_requisito_usuario
+    INNER JOIN requisitos_de_processamento ON requisitos_funcionais.id = requisitos_de_processamento.id_requisito_funcional
+    WHERE requisitos_de_usuario.id_usuario = $1
+  `, [req.session.user.id])).rows;
+  
+  return res.render('pages/requirements', {
+    requisitos: [...requisitosDeCRUD, ...requisitosDeProcessamento],
+  });
+});
 
 app.get("/requirements/create", authMiddleware, async (req, res) => {
-  res.render('pages/requirement_form', {
+  return res.render('pages/requirement_form', {
     type: "create",
     erro: "",
   });
 });
-app.post("/requirements/create", authMiddleware, async (req, res) => {});
+app.post("/requirements/create", authMiddleware, async (req, res) => {
+  const { texto } = req.body;
+
+  try {
+    const requisito = new Requisito(texto);
+
+    const id_requisito_de_usuario = (await bd.query(
+      "INSERT INTO requisitos_de_usuario (id_usuario, descritivo) VALUES ($1, $2) RETURNING id",
+      [req.session.user.id, requisito.texto]
+    )).rows[0].id;
+
+    const id_requisito_funcional = (await bd.query(
+      "INSERT INTO requisitos_funcionais (id_requisito_usuario) VALUES ($1) RETURNING id",
+      [id_requisito_de_usuario]
+    )).rows[0].id;
+  
+    if (requisito.tipo_requisito === "crud") {
+      const id_requisito_de_crud = (await bd.query(
+        "INSERT INTO requisitos_de_crud (id_requisito_funcional, tipo) VALUES ($1, $2) RETURNING id",
+        [id_requisito_funcional, requisito.tipo]
+      )).rows[0].id;
+
+      const id_entidade = (await bd.query(
+        "INSERT INTO entidades (id_requisito_de_crud, nome) VALUES ($1, $2) RETURNING id",
+        [id_requisito_de_crud, requisito.entidade]
+      )).rows[0].id;
+
+      for (let atributo of requisito.atributos) {
+        await bd.query(
+          "INSERT INTO atributos (id_entidade, nome, tipo, tamanho) VALUES ($1, $2, $3, $4) RETURNING id",
+          [id_entidade, atributo, "varchar", "255"]
+        );
+      }
+    } else {
+      await bd.query(
+        "INSERT INTO requisitos_de_processamento (id_requisito_funcional) VALUES ($1)",
+        [id_requisito_funcional]
+      );
+    }
+
+    return res.redirect("/requirements");
+  } catch (error) {
+    if (typeof error === "string") {
+      return res.render('pages/requirement_form', {
+        type: "create",
+        erro: error,
+      });
+    }
+
+    console.log(error);
+    return res.render('pages/requirement_form', {
+      type: "create",
+      erro: "Houve um erro no processo, revise a estrutura do requisito inserido!",
+    });
+  }
+});
 
 app.get("/requirements/edit/:id", authMiddleware, async (req, res) => {
-  res.render('pages/requirement_form', {
+  return res.render('pages/requirement_form', {
     type: "edit",
     erro: "",
   });
