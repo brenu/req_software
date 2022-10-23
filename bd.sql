@@ -111,6 +111,19 @@ CREATE TABLE public.atributos (
 ALTER TABLE public.atributos OWNER TO postgres;
 -- ddl-end --
 
+-- object: public.associacoes | type: TABLE --
+-- DROP TABLE IF EXISTS public.associacoes CASCADE;
+CREATE TABLE public.associacoes (
+	id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ,
+	tipo varchar(16),
+	id_requisito bigint,
+	id_condicao bigint
+
+);
+-- ddl-end --
+ALTER TABLE public.associacoes OWNER TO postgres;
+-- ddl-end --
+
 -- object: fk_constraint_id_usuario_req_usuario | type: CONSTRAINT --
 -- ALTER TABLE public.requisitos_de_usuario DROP CONSTRAINT IF EXISTS fk_constraint_id_usuario_req_usuario CASCADE;
 ALTER TABLE public.requisitos_de_usuario ADD CONSTRAINT fk_constraint_id_usuario_req_usuario FOREIGN KEY (id_usuario)
@@ -150,6 +163,20 @@ ON DELETE CASCADE ON UPDATE CASCADE;
 -- ALTER TABLE public.atributos DROP CONSTRAINT IF EXISTS fk_atributo_entidades CASCADE;
 ALTER TABLE public.atributos ADD CONSTRAINT fk_atributo_entidades FOREIGN KEY (id_entidade)
 REFERENCES public.entidades (id) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: fk_condicoes_id_requisito | type: CONSTRAINT --
+-- ALTER TABLE public.associacoes DROP CONSTRAINT IF EXISTS fk_condicoes_id_requisito CASCADE;
+ALTER TABLE public.associacoes ADD CONSTRAINT fk_condicoes_id_requisito FOREIGN KEY (id_requisito)
+REFERENCES public.requisitos_funcionais (id) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: fk_condicoes_id_condicao | type: CONSTRAINT --
+-- ALTER TABLE public.associacoes DROP CONSTRAINT IF EXISTS fk_condicoes_id_condicao CASCADE;
+ALTER TABLE public.associacoes ADD CONSTRAINT fk_condicoes_id_condicao FOREIGN KEY (id_condicao)
+REFERENCES public.requisitos_funcionais (id) MATCH SIMPLE
 ON DELETE CASCADE ON UPDATE CASCADE;
 -- ddl-end --
 

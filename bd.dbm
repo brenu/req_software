@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
  Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.4" use-changelog="false" last-position="188,449" last-zoom="1" max-obj-count="8"
+<dbmodel pgmodeler-ver="0.9.4" use-changelog="false" last-position="183,95" last-zoom="1" max-obj-count="9"
 	 default-schema="public" default-owner="postgres"
 	 layers="Default layer"
 	 active-layers="0"
@@ -165,6 +165,25 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
+<table name="associacoes" layers="0" collapse-mode="2" max-obj-count="4" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="1420" y="200"/>
+	<column name="id" not-null="true"
+	 identity-type="ALWAYS">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="tipo">
+		<type name="varchar" length="16"/>
+	</column>
+	<column name="id_requisito">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="id_condicao">
+		<type name="bigint" length="0"/>
+	</column>
+</table>
+
 <constraint name="fk_constraint_id_usuario_req_usuario" type="fk-constr" comparison-type="MATCH SIMPLE"
 	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.usuarios" table="public.requisitos_de_usuario">
 	<columns names="id_usuario" ref-type="src-columns"/>
@@ -198,6 +217,18 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <constraint name="fk_atributo_entidades" type="fk-constr" comparison-type="MATCH SIMPLE"
 	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.entidades" table="public.atributos">
 	<columns names="id_entidade" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_condicoes_id_requisito" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.requisitos_funcionais" table="public.associacoes">
+	<columns names="id_requisito" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_condicoes_id_condicao" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.requisitos_funcionais" table="public.associacoes">
+	<columns names="id_condicao" ref-type="src-columns"/>
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
@@ -238,5 +269,19 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 src-table="public.atributos"
 	 dst-table="public.entidades" reference-fk="fk_atributo_entidades"
 	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_associacoes_requisitos_funcionais" type="relfk" layers="0"
+	 src-table="public.associacoes"
+	 dst-table="public.requisitos_funcionais" reference-fk="fk_condicoes_id_requisito"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_associacoes_requisitos_funcionais1" type="relfk" layers="0"
+	 src-table="public.associacoes"
+	 dst-table="public.requisitos_funcionais" reference-fk="fk_condicoes_id_condicao"
+	 src-required="false" dst-required="false">
+	<label ref-type="name-label">
+		<position x="63.8433" y="8.90147"/>
+	</label>
+</relationship>
 
 </dbmodel>
