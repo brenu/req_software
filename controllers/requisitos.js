@@ -23,6 +23,7 @@ class RequisitosController {
             requisitos_de_usuario.descritivo,
             requisitos_de_usuario.id_usuario,
             requisitos_de_usuario.id AS id_requisito_usuario,
+            requisitos_funcionais.id AS id_requisito_funcional,
             'crud' AS tipo,
             entidades.nome AS entidade
             FROM requisitos_de_usuario
@@ -37,6 +38,7 @@ class RequisitosController {
             requisitos_de_usuario.descritivo,
             requisitos_de_usuario.id_usuario,
             requisitos_de_usuario.id AS id_requisito_usuario,
+            requisitos_funcionais.id AS id_requisito_funcional,
             'processamento' AS tipo,
             'N/A' AS entidade
             FROM requisitos_de_usuario
@@ -44,23 +46,59 @@ class RequisitosController {
             INNER JOIN requisitos_de_processamento ON requisitos_funcionais.id = requisitos_de_processamento.id_requisito_funcional
             WHERE requisitos_de_usuario.id_usuario = $1
         `, [req.session.user.id])).rows;
-        
-        return res.render('pages/requirements', {
-            requisitos: [...requisitosDeCRUD, ...requisitosDeProcessamento].map(requisito => {
-                const requisitoProcessado = new Requisito(requisito.descritivo);
 
-                requisito.crud = requisito.tipo === "crud" ? crudOperations[requisitoProcessado["tipo"]] : "N/A";
-                requisito.getSet = getSetOperations[requisito.crud];
-                requisito.sql = requisitoProcessado.getSQL();
-                
-                if (requisitoProcessado.atributos.length) {
-                    requisito.atributos = requisitoProcessado.atributos.join(",");
-                } else {
-                    requisito.atributos = "N/A";
+        const associacoes = (await bd.query(`
+            SELECT 
+            associacoes.id,
+            associacoes.id_requisito,
+            associacoes.id_condicao,
+            associacoes.tipo
+            FROM associacoes
+            INNER JOIN requisitos_funcionais AS f1 ON associacoes.id_requisito = f1.id
+            INNER JOIN requisitos_de_usuario ON requisitos_de_usuario.id = f1.id_requisito_usuario
+            WHERE requisitos_de_usuario.id_usuario = $1
+        `, [req.session.user.id])).rows;
+
+        let requisitos = [...requisitosDeCRUD, ...requisitosDeProcessamento];
+        requisitos = await Promise.all(requisitos.map(async (requisito, indice) => {
+            const requisitoProcessado = new Requisito(requisito.descritivo);
+
+            requisito.crud = requisito.tipo === "crud" ? crudOperations[requisitoProcessado["tipo"]] : "N/A";
+            requisito.getSet = getSetOperations[requisito.crud];
+            requisito.sql = requisitoProcessado.getSQL();
+            requisito.casoDeUso = requisitoProcessado.tipo_requisito === "crud" ? `${requisitoProcessado.tipo} ${requisitoProcessado.entidade}` : requisitoProcessado.resto;
+            requisito.identificador = `RF-${indice+1}`;
+
+            if (requisitoProcessado.atributos.length) {
+                requisito.atributos = requisitoProcessado.atributos.join(",");
+            } else {
+                requisito.atributos = "N/A";
+            }
+
+            if (!associacoes || associacoes.length == 0) {
+                requisito.condicoes = "*";
+            } else {
+                requisito.condicoes = "";
+
+                for (let i=0; i<associacoes.length; i++) {
+        
+                    if (requisito.id_requisito_funcional === associacoes[i].id_requisito) {
+                        requisito.condicoes += `${associacoes[i].tipo}(RF-${requisitos.findIndex((item) => item.id_requisito_funcional == associacoes[i].id_condicao)+1})\n`;;
+                    }
+    
                 }
 
-                return requisito;
-            }),
+                if (requisito.condicoes === "") {
+                    requisito.condicoes = "*"
+                }
+
+            }
+
+            return requisito;
+        }));
+        
+        return res.render('pages/requirements', {
+            requisitos
         });
     }
 

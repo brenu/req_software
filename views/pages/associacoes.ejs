@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head'); %>
+</head>
+<body class="container">
+
+<header>
+    <%- include('../partials/auth_header'); %>
+</header>
+
+<main>
+<div class="row">
+  <div class="col-sm-12">
+    <div class="jumbotron d-flex flex-column align-items-center">
+      <h1 class="mb-3">Associações Já Cadastradas</h1>
+      <% if(associacoes.length){ %>
+        <table class="table table-dark rounded" style="overflow: hidden">
+          <thead>
+            <tr>
+              <th scope="col" class="border-0">Requisito</th>
+              <th scope="col" class="border-0">Condição</th>
+              <th scope="col" class="border-0">Tipo de Associação</th>
+              <th scope="col" class="border-0">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% associacoes.forEach((associacao) => { %>
+              <tr>
+                <td><%= associacao.codigo_requisito %></td>
+                <td><%= associacao.codigo_condicao %></td>
+                <td><%= associacao.tipo %></td>
+                <td>
+                  <a href="/associacoes/delete/<%= associacao.id %>">
+                    <i class="fa-solid fa-trash"></i>
+                  </a>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      <% } else{ %>  
+        <p>Ainda não foi cadastrada nenhuma assiciação entre os casos de uso do seu projeto, crie <a href="/associacoes/create">aqui</a>!</p>
+      <% } %>
+    </div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <%- include('../partials/footer'); %>
+</footer>
+
+</body>
+</html>

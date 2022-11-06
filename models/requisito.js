@@ -12,6 +12,7 @@ class Requisito {
         this.entidade;
         this.condicao;
         this.atributos = [];
+        this.resto;
         
         const error = this.parse(this.texto);
         if (error) {
@@ -49,6 +50,8 @@ class Requisito {
             if (splittedTexto[2] !== "com") {
                 this.condicao = splittedTexto[2];
             }
+        }else {
+            this.resto = splittedTexto.join(" ")
         }
     }  
 

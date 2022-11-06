@@ -18,10 +18,12 @@
         <table class="table table-dark rounded" style="overflow: hidden">
           <thead>
             <tr>
-              <th scope="col" class="border-0">Descritivo</th>
+              <th scope="col" class="border-0">Requisito</th>
+              <th scope="col" class="border-0">Caso de Uso</th>
               <th scope="col" class="border-0">Tipo</th>
               <th scope="col" class="border-0">Entidade</th>
               <th scope="col" class="border-0">Atributos</th>
+              <th scope="col" class="border-0">Condições</th>
               <th scope="col" class="border-0">CRUD</th>
               <th scope="col" class="border-0">Get/Set</th>
               <th scope="col" class="border-0">SQL</th>
@@ -31,10 +33,12 @@
           <tbody>
             <% requisitos.forEach((requisito) => { %>
               <tr>
-                <td><%= requisito.descritivo %></td>
+                <td><%= requisito.identificador %></td>
+                <td><%= requisito.casoDeUso %></td>
                 <td><%= requisito.tipo %></td>
                 <td><%= requisito.entidade %></td>
                 <td><%= requisito.atributos %></td>
+                <td><%= requisito.condicoes %></td>
                 <td><%= requisito.crud %></td>
                 <td><%= requisito.getSet %></td>
                 <td><%= requisito.sql %></td>

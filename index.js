@@ -7,6 +7,8 @@ const crypto = require('crypto');
 const Requisito = require('./models/requisito');
 const RequisitosController = require('./controllers/requisitos');
 const RequisitosViewsController = require('./controllers/requisitosViews');
+const AssociacoesViewsController = require('./controllers/associacoesViews');
+const AssociacoesController = require('./controllers/associacoes');
 
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended: false}));
@@ -151,6 +153,11 @@ app.get("/requirements/edit/:id", authMiddleware, RequisitosViewsController.edit
 app.post("/requirements/edit/:id", authMiddleware, RequisitosController.edit);
 
 app.get("/requirements/delete/:id", authMiddleware, RequisitosController.delete);
+
+app.get("/associacoes", authMiddleware, AssociacoesViewsController.index);
+
+app.get("/associacoes/create", authMiddleware, AssociacoesViewsController.create);
+app.post("/associacoes/create", authMiddleware, AssociacoesController.create);
 
 app.listen(8080);
 console.log('Server is listening on port 8080');
