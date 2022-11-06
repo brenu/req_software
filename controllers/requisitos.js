@@ -1,6 +1,21 @@
 const Requisito = require('../models/requisito');
 const bd = require('../config/bd');
 
+const crudOperations = {
+    "incluir": "C",
+    "exibir": "R",
+    "atualizar": "U",
+    "remover": "D"
+};
+
+const getSetOperations = {
+    "C": "set",
+    "R": "get",
+    "U": "get,set",
+    "D": "get,set",
+    "N/A": "N/A"
+}
+
 class RequisitosController {
     static async index(req, res) {
         const requisitosDeCRUD = (await bd.query(`
@@ -31,7 +46,21 @@ class RequisitosController {
         `, [req.session.user.id])).rows;
         
         return res.render('pages/requirements', {
-            requisitos: [...requisitosDeCRUD, ...requisitosDeProcessamento],
+            requisitos: [...requisitosDeCRUD, ...requisitosDeProcessamento].map(requisito => {
+                const requisitoProcessado = new Requisito(requisito.descritivo);
+
+                requisito.crud = requisito.tipo === "crud" ? crudOperations[requisitoProcessado["tipo"]] : "N/A";
+                requisito.getSet = getSetOperations[requisito.crud];
+                requisito.sql = requisitoProcessado.getSQL();
+                
+                if (requisitoProcessado.atributos.length) {
+                    requisito.atributos = requisitoProcessado.atributos.join(",");
+                } else {
+                    requisito.atributos = "N/A";
+                }
+
+                return requisito;
+            }),
         });
     }
 

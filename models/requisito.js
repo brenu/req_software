@@ -1,3 +1,8 @@
+const sqlStatements = {
+    "exibir": "SELECT * FROM ",
+    "incluir": "INSERT INTO"
+}
+
 class Requisito {
     constructor(texto) {
         this.texto = texto;
@@ -46,6 +51,34 @@ class Requisito {
             }
         }
     }  
+
+    getSQL() {
+        if (this.tipo_requisito !== "crud") {
+            return "N/A";
+        }
+
+        let resultado = "";
+
+        switch(this.tipo) {
+            case "exibir":
+                resultado = `SELECT * FROM ${this.entidade}`;
+                break;
+            case "incluir":
+                resultado = `INSERT INTO ${this.entidade} (${this.atributos.join(",")}) VALUES (...)`;
+                break;
+            case "atualizar":
+                resultado = `UPDATE ${this.entidade} SET ... WHERE ...`;
+                break;
+            case "remover":
+                resultado = `DELETE FROM ${this.entidade} WHERE ...`;
+                break;
+            default:
+                resultado = "N/A";
+        }
+
+        return resultado;
+
+    }
 }
 
 module.exports = Requisito;

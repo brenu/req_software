@@ -4,6 +4,7 @@ class RequisitosViewsController {
     static async create(req, res) {
         return res.render('pages/requirement_form', {
             type: "create",
+            texto: "",
             erro: "",
           });
     }
