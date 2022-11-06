@@ -25,9 +25,7 @@ class Requisito {
         const splittedTexto = texto.split(" ");
 
         // Verificando a sintaxe
-        if (splittedTexto.length < 2 || splittedTexto.length > 5) {
-            return "O requisito não segue a sintaxe esperada. Por favor, revise!";  
-        } else if (splittedTexto[0] === "incluir" && (splittedTexto.length < 4 || splittedTexto[splittedTexto.length-2] !== "com" )) {
+        if (splittedTexto[0] === "incluir" && (splittedTexto.length < 4 || splittedTexto[splittedTexto.length-2] !== "com" )) {
             return "O requisito não segue a sintaxe esperada. Por favor, revise!";  
         }
 

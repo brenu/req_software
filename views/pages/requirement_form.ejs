@@ -14,9 +14,28 @@
   <div class="col-sm-12">
     <div class="jumbotron d-flex flex-column align-items-center">
       <h1><%= type === "create" ? "Cadastrar Novo " : "Editar " %>Requisito</h1>
-      <form class="col-sm-10" method="POST">
-        <label for="texto" style="color:#444">Estrutura esperada: <br />O sistema deve <span style="color:#f55;">&lt;exibir/incluir/atualizar/remover/outros (requisitos para processamento)&gt;</span> <span style="color:#4bb543;">&lt;entidade&gt;</span> <span style="color:#4bb;">&lt;condição (opcional)&gt;</span> com <span style="color:#8b43b5;">&lt;atributos (somente ao incluir, separados por vírgula)&gt;</span></label>
-        <input class="mb-3 p-2 col-sm-12" type="text" name="texto" placeholder="ex: O sistema deve incluir clientes aprovados com nome, endereço, cpf" value="<%= type === 'edit' ? texto : '' %>" />
+      <form class="col-sm-10 form-floating" onsubmit="handleSubmit(event)" method="POST">
+        <label for="verbo">O sistema deve...</label>
+        <select class="col-sm-3 form-control form-select form-select-lg mb-3" name="verbo" id="verbo" onchange="handleAction(event)">
+          <option selected>Selecione uma ação</option>
+          <option value="exibir">exibir</option>
+          <option value="incluir">incluir</option>
+          <option value="atualizar">atualizar</option>
+          <option value="remover">remover</option>
+          <option value="outro">outro</option>
+        </select>
+
+        <label style="display:none" for="entidade">Entidade</label>
+        <input style="display:none" class="form-control mb-3" type="text" placeholder="ex: estudante" name="entidade" />
+
+        <label style="display:none" for="atributos">Atributos (separados por vírgula)</label>
+        <input style="display:none" class="form-control mb-3" type="text" placeholder="ex: nome,email,cpf" name="atributos" />
+
+        <label style="display:none" for="resto">Restante do requisito</label>
+        <input style="display:none" class="form-control mb-3" type="text" placeholder="ex: calcular a idade do aluno" name="resto" />
+
+        <input style="display:none" class="form-control mb-3" type="text" name="texto" />
+
         <p><%= erro ? erro : "" %></p>
         <button class="p-2 col-sm-12 btn-primary" type="submit"><%= type === "create" ? "Criar" : "Editar" %></button>
       </form>
@@ -28,6 +47,106 @@
 <footer>
   <%- include('../partials/footer'); %>
 </footer>
+
+<script>
+  if (window.location.href.includes("edit")) {
+    const requisito = parse("<%= texto %>");
+
+    if (requisito.tipo_requisito !== "crud") {
+      document.getElementsByName("verbo")[0].value = "outro";
+
+      document.querySelector("label[for='resto']").style.display = "unset";
+      document.getElementsByName("resto")[0].value = requisito.resto;
+      document.getElementsByName("resto")[0].style.display = "unset";
+    } else {
+      document.getElementsByName("verbo")[0].value = requisito.tipo;
+      
+      document.querySelector("label[for='entidade']").style.display = "unset";
+      document.getElementsByName("entidade")[0].value = requisito.entidade;
+      document.getElementsByName("entidade")[0].style.display = "unset";
+
+      if (requisito.tipo === "incluir") {
+        document.querySelector("label[for='atributos']").style.display = "unset";
+        document.getElementsByName("atributos")[0].value = requisito.atributos;
+        document.getElementsByName("atributos")[0].style.display = "unset";
+      }
+    }
+  }
+
+  function parse(texto) {
+    const resultado = {}
+
+    // Removendo "o sistema deve (...)"
+    texto = texto.toLowerCase().replace("o sistema deve ", "");
+
+    // Removendo espaços desnecessários
+    texto = texto.replace("  ", " ").replace(", ", ",").replace(" ,", ",");
+
+    // Separando o requisito em partes
+    const splittedTexto = texto.split(" ");
+
+    resultado.tipo = splittedTexto[0];
+    resultado.tipo_requisito = ["exibir", "incluir", "atualizar", "remover"].includes(resultado.tipo) ? "crud" : "processamento";
+    resultado.entidade = splittedTexto[1];
+
+    if (resultado.tipo_requisito === "crud") {
+        if (resultado.tipo === "incluir") {
+            // Removendo caracteres indesejados dos atributos
+            splittedTexto[splittedTexto.length-1] = splittedTexto[splittedTexto.length-1].replace(/[^\w\,]/g, "");
+            
+            resultado.atributos = splittedTexto[splittedTexto.length-1].split(",");
+        }
+    } else {
+      resultado.resto = texto;
+    }
+
+    return resultado;
+  }
+
+  function handleAction(event) {
+    const value = event.target.value;
+
+    if (value === "outro") {
+      document.querySelector("label[for='resto']").style.display = "unset";
+      document.getElementsByName("resto")[0].style.display = "unset";
+
+      document.querySelector("label[for='entidade']").style.display = "none";
+      document.getElementsByName("entidade")[0].style.display = "none";
+
+      document.querySelector("label[for='atributos']").style.display = "none";
+        document.getElementsByName("atributos")[0].style.display = "none";
+    } else {
+      document.querySelector("label[for='entidade']").style.display = "unset";
+      document.getElementsByName("entidade")[0].style.display = "unset";
+
+      document.querySelector("label[for='resto']").style.display = "none";
+      document.getElementsByName("resto")[0].style.display = "none";
+
+      document.querySelector("label[for='atributos']").style.display = "none";
+        document.getElementsByName("atributos")[0].style.display = "none";
+
+      if (value === "incluir") {
+        document.querySelector("label[for='atributos']").style.display = "unset";
+        document.getElementsByName("atributos")[0].style.display = "unset";
+      }
+    }
+  }
+
+  function handleSubmit(event) {
+    const action = document.getElementsByName("verbo")[0].value;
+    const entidade = document.getElementsByName("entidade")[0].value;
+    const atributos = document.getElementsByName("atributos")[0].value;
+    const resto = document.getElementsByName("resto")[0].value;
+
+    if (action === "outro") {
+      document.getElementsByName("texto")[0].value = `O sistema deve ${resto}`;
+    } else {
+      document.getElementsByName("texto")[0].value = `O sistema deve ${action} ${entidade}${action === "incluir" ? " com " + atributos : "" }`;
+    }
+
+    return true;
+  }
+</script>
 
 </body>
 </html>
