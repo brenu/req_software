@@ -159,5 +159,7 @@ app.get("/associacoes", authMiddleware, AssociacoesViewsController.index);
 app.get("/associacoes/create", authMiddleware, AssociacoesViewsController.create);
 app.post("/associacoes/create", authMiddleware, AssociacoesController.create);
 
+app.get("/associacoes/delete/:id", authMiddleware, AssociacoesController.delete);
+
 app.listen(8080);
 console.log('Server is listening on port 8080');

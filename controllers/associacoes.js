@@ -48,6 +48,28 @@ class AssociacoesController {
             });
         }
     }
+
+    static async delete(req, res) {
+        const { id } = req.params;
+
+        try {
+            await bd.query(`
+                DELETE FROM associacoes
+                WHERE associacoes.id = $1 AND associacoes.id IN (
+                    SELECT associacoes.id FROM requisitos_de_usuario
+                    INNER JOIN requisitos_funcionais ON requisitos_funcionais.id_requisito_usuario = requisitos_de_usuario.id
+                    INNER JOIN associacoes ON associacoes.id_requisito = requisitos_funcionais.id
+                    WHERE associacoes.id = $1 AND requisitos_de_usuario.id_usuario = $2
+                );
+            `, [id, req.session.user.id]);
+
+            return res.redirect("/associacoes");
+        } catch (error) {
+            console.log(error);
+
+            return res.render("pages/404");
+        }
+    }
 }
 
 module.exports = AssociacoesController;
