@@ -9,6 +9,8 @@ const RequisitosController = require('./controllers/requisitos');
 const RequisitosViewsController = require('./controllers/requisitosViews');
 const AssociacoesViewsController = require('./controllers/associacoesViews');
 const AssociacoesController = require('./controllers/associacoes');
+const ProjetosViewsController = require('./controllers/projetosViews');
+const ProjetosController = require('./controllers/projetos');
 
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended: false}));
@@ -142,24 +144,29 @@ app.post('/edit-user', authMiddleware, async (req, res) => {
   }
 });
 
-app.get("/requirements", authMiddleware, RequisitosController.index);
+app.get("/projetos", authMiddleware, ProjetosViewsController.index);
+app.get("/projetos/create", authMiddleware, ProjetosViewsController.create);
 
-app.get("/requirements/create", authMiddleware, RequisitosViewsController.create);
+app.post("/projetos/create", authMiddleware, ProjetosController.create);
 
-app.post("/requirements/create", authMiddleware, RequisitosController.create);
+app.get("/requirements/:id_projeto/create", authMiddleware, RequisitosViewsController.create);
 
-app.get("/requirements/edit/:id", authMiddleware, RequisitosViewsController.edit);
+app.get("/requirements/:id_projeto", authMiddleware, RequisitosController.index);
 
-app.post("/requirements/edit/:id", authMiddleware, RequisitosController.edit);
+app.post("/requirements/:id_projeto/create", authMiddleware, RequisitosController.create);
 
-app.get("/requirements/delete/:id", authMiddleware, RequisitosController.delete);
+app.get("/requirements/:id_projeto/edit/:id", authMiddleware, RequisitosViewsController.edit);
 
-app.get("/associacoes", authMiddleware, AssociacoesViewsController.index);
+app.post("/requirements/:id_projeto/edit/:id", authMiddleware, RequisitosController.edit);
 
-app.get("/associacoes/create", authMiddleware, AssociacoesViewsController.create);
-app.post("/associacoes/create", authMiddleware, AssociacoesController.create);
+app.get("/requirements/:id_projeto/delete/:id", authMiddleware, RequisitosController.delete);
 
-app.get("/associacoes/delete/:id", authMiddleware, AssociacoesController.delete);
+app.get("/associacoes/:id_projeto", authMiddleware, AssociacoesViewsController.index);
+
+app.get("/associacoes/:id_projeto/create", authMiddleware, AssociacoesViewsController.create);
+app.post("/associacoes/:id_projeto/create", authMiddleware, AssociacoesController.create);
+
+app.get("/associacoes/:id_projeto/delete/:id", authMiddleware, AssociacoesController.delete);
 
 app.listen(8080);
 console.log('Server is listening on port 8080');

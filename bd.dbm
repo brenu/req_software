@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
  Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.4" use-changelog="false" last-position="183,95" last-zoom="1" max-obj-count="9"
+<dbmodel pgmodeler-ver="0.9.4" use-changelog="false" last-position="0,90" last-zoom="1" max-obj-count="12"
 	 default-schema="public" default-owner="postgres"
 	 layers="Default layer"
 	 active-layers="0"
@@ -23,7 +23,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="usuarios" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
 	<schema name="public"/>
 	<role name="postgres"/>
-	<position x="420" y="180"/>
+	<position x="60" y="20"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
 		<type name="bigint" length="0"/>
@@ -54,7 +54,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="requisitos_de_usuario" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="postgres"/>
-	<position x="880" y="200"/>
+	<position x="800" y="420"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
 		<type name="bigint" length="0"/>
@@ -62,7 +62,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="descritivo">
 		<type name="text" length="0"/>
 	</column>
-	<column name="id_usuario">
+	<column name="id_projeto">
 		<type name="bigint" length="0"/>
 	</column>
 	<constraint name="requisitos_de_usuario_pk" type="pk-constr" table="public.requisitos_de_usuario">
@@ -73,7 +73,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="requisitos_funcionais" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
 	<schema name="public"/>
 	<role name="postgres"/>
-	<position x="860" y="480"/>
+	<position x="780" y="720"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
 		<type name="bigint" length="0"/>
@@ -89,7 +89,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="requisitos_de_crud" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="postgres"/>
-	<position x="480" y="740"/>
+	<position x="400" y="980"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
 		<type name="bigint" length="0"/>
@@ -108,7 +108,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="requisitos_de_processamento" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
 	<schema name="public"/>
 	<role name="postgres"/>
-	<position x="1180" y="740"/>
+	<position x="1100" y="980"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
 		<type name="bigint" length="0"/>
@@ -124,7 +124,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="entidades" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="postgres"/>
-	<position x="520" y="980"/>
+	<position x="440" y="1220"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
 		<type name="bigint" length="0"/>
@@ -143,7 +143,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="atributos" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
 	<schema name="public"/>
 	<role name="postgres"/>
-	<position x="540" y="1200"/>
+	<position x="460" y="1440"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
 		<type name="bigint" length="0"/>
@@ -168,7 +168,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="associacoes" layers="0" collapse-mode="2" max-obj-count="4" z-value="0">
 	<schema name="public"/>
 	<role name="postgres"/>
-	<position x="1420" y="200"/>
+	<position x="1340" y="440"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS">
 		<type name="bigint" length="0"/>
@@ -184,9 +184,89 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</column>
 </table>
 
-<constraint name="fk_constraint_id_usuario_req_usuario" type="fk-constr" comparison-type="MATCH SIMPLE"
-	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.usuarios" table="public.requisitos_de_usuario">
-	<columns names="id_usuario" ref-type="src-columns"/>
+<table name="projetos" layers="0" collapse-mode="2" max-obj-count="4" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="20" y="400"/>
+	<column name="id" not-null="true"
+	 identity-type="ALWAYS">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="descricao">
+		<type name="text" length="0"/>
+	</column>
+	<column name="nome_projeto">
+		<type name="varchar" length="255"/>
+	</column>
+	<column name="id_usuario">
+		<type name="bigint" length="0"/>
+	</column>
+	<constraint name="projetos_pk" type="pk-constr" table="public.projetos">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="projetos_nome_projeto_unique_constraint" type="uq-constr" table="public.projetos">
+		<columns names="nome_projeto" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="questoes_avaliacao_projeto" layers="0" collapse-mode="2" max-obj-count="4" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="440" y="60"/>
+	<column name="id" not-null="true"
+	 identity-type="ALWAYS">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="questao">
+		<type name="text" length="0"/>
+	</column>
+	<column name="resposta">
+		<type name="varchar" length="200"/>
+	</column>
+	<column name="id_projeto">
+		<type name="bigint" length="0"/>
+	</column>
+	<constraint name="questoes_avaliacao_projeto_pk" type="pk-constr" table="public.questoes_avaliacao_projeto">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<function name="cria_questoes_avaliacao_projeto"
+		window-func="false"
+		returns-setof="false"
+		behavior-type="CALLED ON NULL INPUT"
+		function-type="VOLATILE"
+		security-type="SECURITY INVOKER"
+		parallel-type="PARALLEL UNSAFE"
+		execution-cost="1"
+		row-amount="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<language name="plpgsql"/>
+	<return-type>
+	<type name="trigger" length="0"/>
+	</return-type>
+	<definition><![CDATA[BEGIN
+		INSERT INTO questoes_avaliacao_projeto (questao, resposta, id_projeto) VALUES
+	 		('Este é um projeto de investigação de tecnologia?','', NEW.id),
+	 		('Esta é uma aplicação web?', '', NEW.id),
+			('Este é um projeto especialista?', '', NEW.id),
+			('Qual o tamanho necessário da equipe para o projeto? (quantidade aproximada)', '', NEW.id),
+			('Tamanho do projeto? (Pequeno/médio/grande/empresarial/global)', '', NEW.id),
+			('Grau da Complexidade na modelagem do projeto? (Simples/moderada/difícil/complexo)', '', NEW.id);
+		RETURN NULL;
+END;]]></definition>
+</function>
+
+<trigger name="cria_questoes_avaliacao_projeto_trigger" firing-type="AFTER" per-line="true" constraint="false"
+	 ins-event="true" del-event="false" upd-event="false" trunc-event="false"
+	 table="public.projetos">
+		<function signature="public.cria_questoes_avaliacao_projeto()"/>
+</trigger>
+
+<constraint name="fk_constraint_id_projeto_req_usuario" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.projetos" table="public.requisitos_de_usuario">
+	<columns names="id_projeto" ref-type="src-columns"/>
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
@@ -232,14 +312,17 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
-<relationship name="rel_requisitos_de_usuario_usuarios" type="relfk" layers="0"
-	 src-table="public.requisitos_de_usuario"
-	 dst-table="public.usuarios" reference-fk="fk_constraint_id_usuario_req_usuario"
-	 src-required="false" dst-required="false">
-	<label ref-type="name-label">
-		<position x="0" y="0"/>
-	</label>
-</relationship>
+<constraint name="fk_projetos_id_usuario_constraint" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.usuarios" table="public.projetos">
+	<columns names="id_usuario" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_id_projeto_questoes_avaliacao_projeto" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="CASCADE" del-action="CASCADE" ref-table="public.projetos" table="public.questoes_avaliacao_projeto">
+	<columns names="id_projeto" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
 
 <relationship name="rel_requisitos_de_usuario_cp_requisitos_de_usuario" type="relfk" layers="0"
 	 src-table="public.requisitos_funcionais"
@@ -283,5 +366,20 @@ CAUTION: Do not modify this file unless you know what you are doing.
 		<position x="63.8433" y="8.90147"/>
 	</label>
 </relationship>
+
+<relationship name="rel_projetos_usuarios" type="relfk" layers="0"
+	 src-table="public.projetos"
+	 dst-table="public.usuarios" reference-fk="fk_projetos_id_usuario_constraint"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_requisitos_de_usuario_projetos" type="relfk" layers="0"
+	 src-table="public.requisitos_de_usuario"
+	 dst-table="public.projetos" reference-fk="fk_constraint_id_projeto_req_usuario"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_questoes_avaliacao_projeto_projetos" type="relfk" layers="0"
+	 src-table="public.questoes_avaliacao_projeto"
+	 dst-table="public.projetos" reference-fk="fk_id_projeto_questoes_avaliacao_projeto"
+	 src-required="false" dst-required="false"/>
 
 </dbmodel>

@@ -18,10 +18,12 @@ const getSetOperations = {
 
 class RequisitosController {
     static async index(req, res) {
+        const {id_projeto} = req.params;
+
         const requisitosDeCRUD = (await bd.query(`
             SELECT 
             requisitos_de_usuario.descritivo,
-            requisitos_de_usuario.id_usuario,
+            requisitos_de_usuario.id_projeto,
             requisitos_de_usuario.id AS id_requisito_usuario,
             requisitos_funcionais.id AS id_requisito_funcional,
             'crud' AS tipo,
@@ -30,13 +32,13 @@ class RequisitosController {
             INNER JOIN requisitos_funcionais ON requisitos_de_usuario.id = requisitos_funcionais.id_requisito_usuario
             INNER JOIN requisitos_de_crud ON requisitos_funcionais.id = requisitos_de_crud.id_requisito_funcional
             INNER JOIN entidades ON entidades.id_requisito_de_crud = requisitos_de_crud.id
-            WHERE requisitos_de_usuario.id_usuario = $1
-        `, [req.session.user.id])).rows;
+            WHERE requisitos_de_usuario.id_projeto = $1
+        `, [id_projeto])).rows;
 
         const requisitosDeProcessamento = (await bd.query(`
             SELECT 
             requisitos_de_usuario.descritivo,
-            requisitos_de_usuario.id_usuario,
+            requisitos_de_usuario.id_projeto,
             requisitos_de_usuario.id AS id_requisito_usuario,
             requisitos_funcionais.id AS id_requisito_funcional,
             'processamento' AS tipo,
@@ -44,8 +46,8 @@ class RequisitosController {
             FROM requisitos_de_usuario
             INNER JOIN requisitos_funcionais ON requisitos_de_usuario.id = requisitos_funcionais.id_requisito_usuario
             INNER JOIN requisitos_de_processamento ON requisitos_funcionais.id = requisitos_de_processamento.id_requisito_funcional
-            WHERE requisitos_de_usuario.id_usuario = $1
-        `, [req.session.user.id])).rows;
+            WHERE requisitos_de_usuario.id_projeto = $1
+        `, [id_projeto])).rows;
 
         const associacoes = (await bd.query(`
             SELECT 
@@ -56,8 +58,8 @@ class RequisitosController {
             FROM associacoes
             INNER JOIN requisitos_funcionais AS f1 ON associacoes.id_requisito = f1.id
             INNER JOIN requisitos_de_usuario ON requisitos_de_usuario.id = f1.id_requisito_usuario
-            WHERE requisitos_de_usuario.id_usuario = $1
-        `, [req.session.user.id])).rows;
+            WHERE requisitos_de_usuario.id_projeto = $1
+        `, [id_projeto])).rows;
 
         let requisitos = [...requisitosDeCRUD, ...requisitosDeProcessamento];
         requisitos = await Promise.all(requisitos.map(async (requisito, indice) => {
@@ -98,19 +100,21 @@ class RequisitosController {
         }));
         
         return res.render('pages/requirements', {
-            requisitos
+            requisitos,
+            id_projeto
         });
     }
 
     static async create(req, res) {
-        const { texto } = req.body;
+        const {id_projeto} = req.params;
+        let { texto } = req.body;
 
         try {
             const requisito = new Requisito(texto);
 
             const id_requisito_de_usuario = (await bd.query(
-                "INSERT INTO requisitos_de_usuario (id_usuario, descritivo) VALUES ($1, $2) RETURNING id",
-                [req.session.user.id, requisito.texto]
+                "INSERT INTO requisitos_de_usuario (id_projeto, descritivo) VALUES ($1, $2) RETURNING id",
+                [id_projeto, requisito.texto]
             )).rows[0].id;
 
             const id_requisito_funcional = (await bd.query(
@@ -142,7 +146,7 @@ class RequisitosController {
                 );
             }
 
-            return res.redirect("/requirements");
+            return res.redirect(`/requirements/${id_projeto}`);
         } catch (error) {
             if (typeof error === "string") {
             return res.render('pages/requirement_form', {
@@ -159,11 +163,11 @@ class RequisitosController {
     }
 
     static async edit(req, res) {
-        const { id } = req.params;
+        const { id, id_projeto } = req.params;
         const { texto } = req.body;
 
         try {
-            const id_requisito = (await bd.query("SELECT id FROM requisitos_de_usuario WHERE id  = $1 AND id_usuario = $2", [id, req.session.user.id])).rows[0].id;
+            const id_requisito = (await bd.query("SELECT id FROM requisitos_de_usuario WHERE id  = $1 AND id_projeto = $2", [id, id_projeto])).rows[0].id;
 
             if (id_requisito) {
                 await bd.query("DELETE FROM requisitos_funcionais WHERE id_requisito_usuario = $1", [id_requisito]);
@@ -201,7 +205,7 @@ class RequisitosController {
                     );
                 }
 
-                return res.redirect("/requirements");
+                return res.redirect("/requirements/"+id_projeto);
             }
 
             return res.render("pages/404");
@@ -212,12 +216,12 @@ class RequisitosController {
     }
 
     static async delete(req, res) {
-        const { id } = req.params;
+        const { id, id_projeto } = req.params;
 
         try {
-            await bd.query("DELETE FROM requisitos_de_usuario WHERE id = $1 AND id_usuario = $2", [id, req.session.user.id]);
+            await bd.query("DELETE FROM requisitos_de_usuario WHERE id = $1 AND id_projeto = $2", [id, id_projeto]);
 
-            return res.redirect("/requirements");
+            return res.redirect("/requirements/"+id_projeto);
         } catch (error) {
             return res.render("pages/404");
         }

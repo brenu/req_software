@@ -43,10 +43,10 @@
                 <td><%= requisito.getSet %></td>
                 <td><%= requisito.sql %></td>
                 <td>
-                  <a href="/requirements/edit/<%= requisito.id_requisito_usuario %>">
+                  <a href="/requirements/<%= id_projeto %>/edit/<%= requisito.id_requisito_usuario %>">
                     <i class="fa-solid fa-pen-to-square"></i>
                   </a>
-                  <a href="/requirements/delete/<%= requisito.id_requisito_usuario %>">
+                  <a href="/requirements/<%= id_projeto %>/delete/<%= requisito.id_requisito_usuario %>">
                     <i class="fa-solid fa-trash"></i>
                   </a>
                 </td>
@@ -57,7 +57,7 @@
         <h2 class="mt-5 mb-5">Casos de Uso</h2>
         <div id="casosDeUso" style="background-color: whitesmoke; border: solid 1px black; width: 100%; height: 400px"></div>
       <% } else { %>  
-        <p>Ainda não foi cadastrado nenhum requisito para o seu projeto, crie <a href="/requirements/create">aqui</a>!</p>
+        <p>Ainda não foi cadastrado nenhum requisito para o seu projeto, crie <a href="/requirements/<%= id_projeto %>/create">aqui</a>!</p>
       <% } %>
     </div>
   </div>

@@ -13,6 +13,9 @@ CREATE DATABASE projeto_eng;
 -- ddl-end --
 
 
+SET check_function_bodies = false;
+-- ddl-end --
+
 -- object: req_software | type: SCHEMA --
 -- DROP SCHEMA IF EXISTS req_software CASCADE;
 CREATE SCHEMA req_software;
@@ -44,7 +47,7 @@ ALTER TABLE public.usuarios OWNER TO postgres;
 CREATE TABLE public.requisitos_de_usuario (
 	id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ,
 	descritivo text,
-	id_usuario bigint,
+	id_projeto bigint,
 	CONSTRAINT requisitos_de_usuario_pk PRIMARY KEY (id)
 );
 -- ddl-end --
@@ -124,10 +127,71 @@ CREATE TABLE public.associacoes (
 ALTER TABLE public.associacoes OWNER TO postgres;
 -- ddl-end --
 
--- object: fk_constraint_id_usuario_req_usuario | type: CONSTRAINT --
--- ALTER TABLE public.requisitos_de_usuario DROP CONSTRAINT IF EXISTS fk_constraint_id_usuario_req_usuario CASCADE;
-ALTER TABLE public.requisitos_de_usuario ADD CONSTRAINT fk_constraint_id_usuario_req_usuario FOREIGN KEY (id_usuario)
-REFERENCES public.usuarios (id) MATCH SIMPLE
+-- object: public.projetos | type: TABLE --
+-- DROP TABLE IF EXISTS public.projetos CASCADE;
+CREATE TABLE public.projetos (
+	id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ,
+	descricao text,
+	nome_projeto varchar(255),
+	id_usuario bigint,
+	CONSTRAINT projetos_pk PRIMARY KEY (id),
+	CONSTRAINT projetos_nome_projeto_unique_constraint UNIQUE (nome_projeto)
+);
+-- ddl-end --
+ALTER TABLE public.projetos OWNER TO postgres;
+-- ddl-end --
+
+-- object: public.questoes_avaliacao_projeto | type: TABLE --
+-- DROP TABLE IF EXISTS public.questoes_avaliacao_projeto CASCADE;
+CREATE TABLE public.questoes_avaliacao_projeto (
+	id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ,
+	questao text,
+	resposta varchar(200),
+	id_projeto bigint,
+	CONSTRAINT questoes_avaliacao_projeto_pk PRIMARY KEY (id)
+);
+-- ddl-end --
+ALTER TABLE public.questoes_avaliacao_projeto OWNER TO postgres;
+-- ddl-end --
+
+-- object: public.cria_questoes_avaliacao_projeto | type: FUNCTION --
+-- DROP FUNCTION IF EXISTS public.cria_questoes_avaliacao_projeto() CASCADE;
+CREATE FUNCTION public.cria_questoes_avaliacao_projeto ()
+	RETURNS trigger
+	LANGUAGE plpgsql
+	VOLATILE 
+	CALLED ON NULL INPUT
+	SECURITY INVOKER
+	PARALLEL UNSAFE
+	COST 1
+	AS $$
+INSERT INTO questoes_avaliacao_projeto (questao, resposta, id_projeto) VALUES
+	 ('Este é um projeto de investigação de tecnologia?','', NEW.id),
+	 ('Esta é uma aplicação web?', '', NEW.id),
+	('Este é um projeto especialista?', '', NEW.id),
+	('Qual o tamanho necessário da equipe para o projeto? (quantidade aproximada)', '', NEW.id),
+	('Tamanho do projeto? (Pequeno/médio/grande/empresarial/global)', '', NEW.id),
+	('Grau da Complexidade na modelagem do projeto? (Simples/moderada/difícil/complexo)', '', NEW.id);
+
+RETURN;
+$$;
+-- ddl-end --
+ALTER FUNCTION public.cria_questoes_avaliacao_projeto() OWNER TO postgres;
+-- ddl-end --
+
+-- object: cria_questoes_avaliacao_projeto_trigger | type: TRIGGER --
+-- DROP TRIGGER IF EXISTS cria_questoes_avaliacao_projeto_trigger ON public.projetos CASCADE;
+CREATE TRIGGER cria_questoes_avaliacao_projeto_trigger
+	AFTER INSERT 
+	ON public.projetos
+	FOR EACH ROW
+	EXECUTE PROCEDURE public.cria_questoes_avaliacao_projeto();
+-- ddl-end --
+
+-- object: fk_constraint_id_projeto_req_usuario | type: CONSTRAINT --
+-- ALTER TABLE public.requisitos_de_usuario DROP CONSTRAINT IF EXISTS fk_constraint_id_projeto_req_usuario CASCADE;
+ALTER TABLE public.requisitos_de_usuario ADD CONSTRAINT fk_constraint_id_projeto_req_usuario FOREIGN KEY (id_projeto)
+REFERENCES public.projetos (id) MATCH SIMPLE
 ON DELETE CASCADE ON UPDATE CASCADE;
 -- ddl-end --
 
@@ -177,6 +241,20 @@ ON DELETE CASCADE ON UPDATE CASCADE;
 -- ALTER TABLE public.associacoes DROP CONSTRAINT IF EXISTS fk_condicoes_id_condicao CASCADE;
 ALTER TABLE public.associacoes ADD CONSTRAINT fk_condicoes_id_condicao FOREIGN KEY (id_condicao)
 REFERENCES public.requisitos_funcionais (id) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: fk_projetos_id_usuario_constraint | type: CONSTRAINT --
+-- ALTER TABLE public.projetos DROP CONSTRAINT IF EXISTS fk_projetos_id_usuario_constraint CASCADE;
+ALTER TABLE public.projetos ADD CONSTRAINT fk_projetos_id_usuario_constraint FOREIGN KEY (id_usuario)
+REFERENCES public.usuarios (id) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: fk_id_projeto_questoes_avaliacao_projeto | type: CONSTRAINT --
+-- ALTER TABLE public.questoes_avaliacao_projeto DROP CONSTRAINT IF EXISTS fk_id_projeto_questoes_avaliacao_projeto CASCADE;
+ALTER TABLE public.questoes_avaliacao_projeto ADD CONSTRAINT fk_id_projeto_questoes_avaliacao_projeto FOREIGN KEY (id_projeto)
+REFERENCES public.projetos (id) MATCH SIMPLE
 ON DELETE CASCADE ON UPDATE CASCADE;
 -- ddl-end --
 

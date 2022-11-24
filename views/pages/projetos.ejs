@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head'); %>
+</head>
+<body class="container">
+
+<header>
+    <%- include('../partials/auth_projeto_header'); %>
+</header>
+
+<main>
+<div class="row">
+  <div class="col-sm-12">
+    <div class="jumbotron d-flex flex-column align-items-center">
+      <h1 class="mb-3">Projetos Já Cadastrados</h1>
+      <% if(projetos.length){ %>
+        <table class="table table-dark rounded" style="overflow: hidden">
+          <thead>
+            <tr>
+              <th scope="col" class="border-0">Nome</th>
+              <th scope="col" class="border-0">Descrição</th>
+              <th scope="col" class="border-0">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% projetos.forEach((projeto) => { %>
+              <tr>
+                <td><%= projeto.nome %></td>
+                <td><%= projeto.descricao %></td>
+                <td>
+                    <a href="/requirements/<%= projeto.id %>">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </a>
+                    <a href="/projetos/delete/<%= projeto.id %>">
+                        <i class="fa-solid fa-trash"></i>
+                    </a>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      <% } else{ %>  
+        <p>Ainda não foi cadastrado nenhum projeto, crie <a href="/projetos/create">aqui</a>!</p>
+      <% } %>
+    </div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <%- include('../partials/footer'); %>
+</footer>
+
+</body>
+</html>
