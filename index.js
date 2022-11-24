@@ -11,6 +11,8 @@ const AssociacoesViewsController = require('./controllers/associacoesViews');
 const AssociacoesController = require('./controllers/associacoes');
 const ProjetosViewsController = require('./controllers/projetosViews');
 const ProjetosController = require('./controllers/projetos');
+const AvaliacoesViewsController = require('./controllers/avaliacoesViews');
+const AvaliacoesController = require('./controllers/avaliacoes');
 
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended: false}));
@@ -167,6 +169,9 @@ app.get("/associacoes/:id_projeto/create", authMiddleware, AssociacoesViewsContr
 app.post("/associacoes/:id_projeto/create", authMiddleware, AssociacoesController.create);
 
 app.get("/associacoes/:id_projeto/delete/:id", authMiddleware, AssociacoesController.delete);
+
+app.get("/avaliacao/:id_projeto", authMiddleware, AvaliacoesViewsController.index);
+app.post("/avaliacao/:id_projeto", authMiddleware, AvaliacoesController.update);
 
 app.listen(8080);
 console.log('Server is listening on port 8080');

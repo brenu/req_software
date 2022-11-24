@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head'); %>
+</head>
+<body class="container">
+
+<header>
+    <%- include('../partials/auth_header'); %>
+</header>
+
+<main>
+<div class="row">
+  <div class="col-sm-12">
+    <div class="jumbotron d-flex flex-column align-items-center">
+      <h1 class="mb-3">Avaliação do Projeto</h1>
+        <form class="col-sm-12" method="POST">
+          <table class="table table-dark rounded" style="overflow: hidden">
+            <thead>
+              <tr>
+                <th scope="col" class="border-0">Pergunta</th>
+                <th scope="col" class="border-0">Resposta</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% questoes.forEach((questao) => { %>
+                <tr>
+                  <td><%= questao.questao %></td>
+                  <td><input type="text" name="<%= questao.id %>" value="<%= questao.resposta %>"></td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+          <button class="col-sm-12 btn btn-primary" type="submit">Atualizar</button>
+        </form>
+    </div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <%- include('../partials/footer'); %>
+</footer>
+
+</body>
+</html>
