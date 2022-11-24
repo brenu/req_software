@@ -171,7 +171,10 @@ app.post("/associacoes/:id_projeto/create", authMiddleware, AssociacoesControlle
 app.get("/associacoes/:id_projeto/delete/:id", authMiddleware, AssociacoesController.delete);
 
 app.get("/avaliacao/:id_projeto", authMiddleware, AvaliacoesViewsController.index);
+app.get("/avaliacao/:id_projeto/create", authMiddleware, AvaliacoesViewsController.create);
 app.post("/avaliacao/:id_projeto", authMiddleware, AvaliacoesController.update);
+app.post("/avaliacao/:id_projeto/create", authMiddleware, AvaliacoesController.create);
+app.get("/avaliacao/:id_projeto/delete/:id", authMiddleware, AvaliacoesController.delete);
 
 app.listen(8080);
 console.log('Server is listening on port 8080');

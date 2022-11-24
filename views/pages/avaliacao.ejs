@@ -14,12 +14,14 @@
   <div class="col-sm-12">
     <div class="jumbotron d-flex flex-column align-items-center">
       <h1 class="mb-3">Avaliação do Projeto</h1>
+      <a class="btn btn-primary align-self-start ml-3 mb-3" href="/avaliacao/<%= id_projeto %>/create">Criar pergunta</a>
         <form class="col-sm-12" method="POST">
           <table class="table table-dark rounded" style="overflow: hidden">
             <thead>
               <tr>
                 <th scope="col" class="border-0">Pergunta</th>
                 <th scope="col" class="border-0">Resposta</th>
+                <th scope="col" class="border-0">Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -27,6 +29,11 @@
                 <tr>
                   <td><%= questao.questao %></td>
                   <td><input type="text" name="<%= questao.id %>" value="<%= questao.resposta %>"></td>
+                  <td class="d-flex flex-column align-items-center">
+                    <a href="/avaliacao/12/delete/<%= questao.id %>">
+                      <i class="fa-solid fa-trash"></i>
+                    </a>
+                  </td>
                 </tr>
               <% }); %>
             </tbody>

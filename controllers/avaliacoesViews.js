@@ -11,6 +11,15 @@ class AvaliacoesViewsController {
             id_projeto
         });
     }
+
+    static async create(req, res) {
+        const { id_projeto } = req.params;
+
+        return res.render('pages/avaliacao_form', {
+            erro: "",
+            id_projeto
+        });
+    }
 }
 
 module.exports = AvaliacoesViewsController;
