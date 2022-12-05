@@ -105,6 +105,94 @@ class RequisitosController {
         });
     }
 
+    static async attributes(req, res) {
+        const {id_projeto} = req.params;
+
+        const requisitosDeCRUD = (await bd.query(`
+            SELECT 
+            requisitos_de_usuario.descritivo,
+            requisitos_de_usuario.id_projeto,
+            requisitos_de_usuario.id AS id_requisito_usuario,
+            requisitos_funcionais.id AS id_requisito_funcional,
+            'crud' AS tipo,
+            entidades.nome AS entidade
+            FROM requisitos_de_usuario
+            INNER JOIN requisitos_funcionais ON requisitos_de_usuario.id = requisitos_funcionais.id_requisito_usuario
+            INNER JOIN requisitos_de_crud ON requisitos_funcionais.id = requisitos_de_crud.id_requisito_funcional
+            INNER JOIN entidades ON entidades.id_requisito_de_crud = requisitos_de_crud.id
+            WHERE requisitos_de_usuario.id_projeto = $1
+        `, [id_projeto])).rows;
+
+        const requisitosDeProcessamento = (await bd.query(`
+            SELECT 
+            requisitos_de_usuario.descritivo,
+            requisitos_de_usuario.id_projeto,
+            requisitos_de_usuario.id AS id_requisito_usuario,
+            requisitos_funcionais.id AS id_requisito_funcional,
+            'processamento' AS tipo,
+            'N/A' AS entidade
+            FROM requisitos_de_usuario
+            INNER JOIN requisitos_funcionais ON requisitos_de_usuario.id = requisitos_funcionais.id_requisito_usuario
+            INNER JOIN requisitos_de_processamento ON requisitos_funcionais.id = requisitos_de_processamento.id_requisito_funcional
+            WHERE requisitos_de_usuario.id_projeto = $1
+        `, [id_projeto])).rows;
+
+        const associacoes = (await bd.query(`
+            SELECT 
+            associacoes.id,
+            associacoes.id_requisito,
+            associacoes.id_condicao,
+            associacoes.tipo
+            FROM associacoes
+            INNER JOIN requisitos_funcionais AS f1 ON associacoes.id_requisito = f1.id
+            INNER JOIN requisitos_de_usuario ON requisitos_de_usuario.id = f1.id_requisito_usuario
+            WHERE requisitos_de_usuario.id_projeto = $1
+        `, [id_projeto])).rows;
+
+        let requisitos = [...requisitosDeCRUD, ...requisitosDeProcessamento];
+        requisitos = await Promise.all(requisitos.map(async (requisito, indice) => {
+            const requisitoProcessado = new Requisito(requisito.descritivo);
+
+            requisito.crud = requisito.tipo === "crud" ? crudOperations[requisitoProcessado["tipo"]] : "N/A";
+            requisito.getSet = getSetOperations[requisito.crud];
+            requisito.sql = requisitoProcessado.getSQL();
+            requisito.casoDeUso = requisitoProcessado.tipo_requisito === "crud" ? `${requisitoProcessado.tipo} ${requisitoProcessado.entidade}` : requisitoProcessado.resto;
+            requisito.identificador = `RF-${indice+1}`;
+
+            if (requisitoProcessado.atributos.length) {
+                requisito.atributos = requisitoProcessado.atributos.join(",");
+            } else {
+                requisito.atributos = "N/A";
+            }
+
+            if (!associacoes || associacoes.length == 0) {
+                requisito.condicoes = "*";
+            } else {
+                requisito.condicoes = "";
+
+                for (let i=0; i<associacoes.length; i++) {
+        
+                    if (requisito.id_requisito_funcional === associacoes[i].id_requisito) {
+                        requisito.condicoes += `${associacoes[i].tipo}(RF-${requisitos.findIndex((item) => item.id_requisito_funcional == associacoes[i].id_condicao)+1})\n`;;
+                    }
+    
+                }
+
+                if (requisito.condicoes === "") {
+                    requisito.condicoes = "*"
+                }
+
+            }
+
+            return requisito;
+        }));
+        
+        return res.render('pages/atributos', {
+            requisitos,
+            id_projeto
+        });
+    }
+
     static async create(req, res) {
         const {id_projeto} = req.params;
         let { texto } = req.body;
